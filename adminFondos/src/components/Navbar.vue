@@ -1,12 +1,12 @@
 <template>
   <nav class="navbar">
-    <div class="navbar-brand">Mi App</div>
+    <div class="navbar-brand">ADMIN FONDOS</div>
     <ul class="navbar-menu">
       <li class="navbar-item">
-        <router-link to="/view1" active-class="active">Vista 1</router-link>
+        <router-link to="/view1" active-class="active">Editar Fondos</router-link>
       </li>
       <li class="navbar-item">
-        <router-link to="/view2" active-class="active">Vista 2</router-link>
+        <router-link to="/view2" active-class="active">Estadisticas Fondos</router-link>
       </li>
     </ul>
   </nav>
