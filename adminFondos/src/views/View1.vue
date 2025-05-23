@@ -1,59 +1,14 @@
 <template>
     <div class="fondos-admin">
-        
 
-           <div v-if="showSuccess" class="alert alert-success">
+
+        <div v-if="showSuccess" class="alert alert-success">
             {{ successMessage }}
             <button @click="showSuccess = false" class="close-btn">&times;</button>
         </div>
 
         <!-- Formulario de edición/creación -->
-        <div class="card form-card">
-            <h2>{{ editing ? 'Editar Fondo' : 'Nuevo Fondo' }}</h2>
-            <form @submit.prevent="handleSubmit">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Nombre del Fondo*</label>
-                        <input v-model="form.nombre" type="text" required placeholder="Ej: Crea y Valida">
-                    </div>
-
-                    <div class="form-group">
-                        <label>URL de la Convocatoria*</label>
-                        <input v-model="form.url" type="url" required placeholder="https://www.ejemplo.cl/fondo">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Plataforma*</label>
-                        <select v-model="form.plataforma" required>
-                            <option value="">Seleccione plataforma</option>
-                            <option value="CORFO">CORFO</option>
-                            <option value="ANID">ANID</option>
-                            <option value="GORE">GORE</option>
-                            <option value="OTRO">OTRO</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Fecha de Apertura*</label>
-                        <input v-model="form.fechainicio" type="date" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Fecha de Cierre*</label>
-                        <input v-model="form.fechacierre" type="date" required>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn primary">
-                        {{ editing ? 'Actualizar' : 'Crear' }}
-                    </button>
-                    <button v-if="editing" type="button" @click="cancelEdit" class="btn secondary">
-                        Cancelar
-                    </button>
-                </div>
-            </form>
-        </div>
+        <FormularioFondo :initial-data="form" :editing="editing" @submit="handleSubmit" @cancel="cancelEdit" />
 
         <!-- Listado de fondos -->
         <div class="card table-card">
@@ -115,9 +70,14 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue'
+import FormularioFondo from '../components/FormularioFondo.vue.vue'
+
 
 export default {
     name: 'FondosAdmin',
+    components: {
+        FormularioFondo
+    },
     setup() {
         const API_URL = 'https://backendrw-production.up.railway.app/fondos'
         const fondos = ref([])
@@ -126,7 +86,6 @@ export default {
         const searchQuery = ref('')
         const sortField = ref('nombre')
         const sortDirection = ref('asc')
-
         const showSuccess = ref(false)
         const successMessage = ref('')
 
@@ -136,7 +95,6 @@ export default {
             plataforma: '',
             fechainicio: '',
             fechacierre: ''
-            // Eliminamos contador del formulario inicial
         })
 
         // Obtener fondos desde la API
@@ -151,18 +109,6 @@ export default {
             }
         }
 
-        // Incrementar contador de visitas
-        const incrementCounter = async (id) => {
-            try {
-                const response = await fetch(`${API_URL}/${id}/increment`, {
-                    method: 'PUT'
-                })
-                if (!response.ok) throw new Error('Error al actualizar contador')
-                await fetchFondos()
-            } catch (error) {
-                console.error('Error al incrementar contador:', error)
-            }
-        }
 
         // Filtrar y ordenar fondos
         const filteredFondos = computed(() => {
@@ -201,40 +147,16 @@ export default {
         })
 
         // Manejar envío del formulario
-        const handleSubmit = async () => {
+        const handleSubmit = async (formData) => {
             try {
-                // Convertir las fechas a objetos Date
-                const fechaInicio = new Date(form.value.fechainicio);
-                const fechaCierre = new Date(form.value.fechacierre);
-
-                // Validar fechas
-                if (isNaN(fechaInicio.getTime()) || isNaN(fechaCierre.getTime())) {
-                    alert('Por favor ingrese fechas válidas');
-                    return;
-                }
-
-                if (fechaCierre < fechaInicio) {
-                    alert('La fecha de cierre no puede ser anterior a la fecha de apertura');
-                    return;
-                }
-
-                const url = editing.value ? `${API_URL}/${currentId.value}` : API_URL;
-                const method = editing.value ? 'PUT' : 'POST';
-
-                // Preparar los datos para el backend
-                const dataToSend = {
-                    nombre: form.value.nombre,
-                    url: form.value.url,
-                    plataforma: form.value.plataforma,
-                    fechainicio: fechaInicio.toISOString(), // Convertir a ISO string
-                    fechacierre: fechaCierre.toISOString() // Convertir a ISO string
-                };
+                const url = editing.value ? `${API_URL}/${currentId.value}` : API_URL
+                const method = editing.value ? 'PUT' : 'POST'
 
                 // Si es edición, mantener el contador existente
                 if (editing.value) {
-                    const fondoExistente = fondos.value.find(f => f.id === currentId.value);
+                    const fondoExistente = fondos.value.find(f => f.id === currentId.value)
                     if (fondoExistente) {
-                        dataToSend.contador = fondoExistente.contador;
+                        formData.contador = fondoExistente.contador
                     }
                 }
 
@@ -243,22 +165,31 @@ export default {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(dataToSend)
-                });
+                    body: JSON.stringify(formData)
+                })
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Error al guardar el fondo');
+                    const errorData = await response.json()
+                    throw new Error(errorData.error || 'Error al guardar el fondo')
                 }
 
-                await fetchFondos();
-                resetForm();
-            } catch (error) {
-                console.error('Error en handleSubmit:', error);
-                alert(error.message || 'Error al guardar el fondo');
-            }
-        };
+                await fetchFondos()
+                resetForm()
 
+                // Mostrar mensaje de éxito
+                showSuccess.value = true
+                successMessage.value = editing.value
+                    ? 'Fondo actualizado correctamente'
+                    : 'Fondo creado correctamente'
+
+                setTimeout(() => {
+                    showSuccess.value = false
+                }, 3000)
+            } catch (error) {
+                console.error('Error en handleSubmit:', error)
+                alert(error.message || 'Error al guardar el fondo')
+            }
+        }
         // Editar fondo
         const editFondo = (fondo) => {
             editing.value = true
@@ -269,7 +200,6 @@ export default {
                 plataforma: fondo.plataforma,
                 fechainicio: fondo.fechainicio.split('T')[0],
                 fechacierre: fondo.fechacierre.split('T')[0]
-                // No incluimos contador en el formulario de edición
             }
             window.scrollTo({ top: 0, behavior: 'smooth' })
         }
@@ -332,13 +262,13 @@ export default {
         }
 
         // Formatear fecha
-           const formatDate = (dateString) => {
+        const formatDate = (dateString) => {
             const options = { year: 'numeric', month: 'short', day: 'numeric' }
             return new Date(dateString).toLocaleDateString('es-CL', options)
         }
 
         // Verificar si el fondo está por cerrarse (menos de 7 días)
-       const isClosingSoon = (fechacierre) => {
+        const isClosingSoon = (fechacierre) => {
             const hoy = new Date()
             const cierre = new Date(fechacierre)
             const diffTime = cierre - hoy
@@ -361,11 +291,152 @@ export default {
             sortBy,
             sortIcon,
             formatDate,
-            isClosingSoon
+            isClosingSoon,
+            showSuccess,
+            successMessage
         }
     }
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped>.fondos-admin {
+  padding: 1rem;
+}
+
+.alert {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.table-card {
+  margin-top: 2rem;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-box input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.fondos-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fondos-table th, .fondos-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.fondos-table th {
+  cursor: pointer;
+  background-color: #f8f9fa;
+}
+
+.fondo-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.fondo-link:hover {
+  text-decoration: underline;
+}
+
+.platform-tag {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.platform-tag.corfo {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+
+.platform-tag.anid {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.platform-tag.gore {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.platform-tag.otro {
+  background-color: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.closing-soon {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.warning-badge {
+  display: inline-block;
+  background-color: #ffeb3b;
+  color: #333;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-icon.edit {
+  background-color: #2196f3;
+  color: white;
+}
+
+.btn-icon.delete {
+  background-color: #f44336;
+  color: white;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+}</style>

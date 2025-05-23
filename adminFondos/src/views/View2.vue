@@ -7,32 +7,32 @@
         </div>
 
         <div class="stats-container">
-         <div class="stats-summary">
-  <div class="stat-card">
-    <div class="stat-header">
-      <img src="/wallet.png" alt="Total de Fondos" class="icon" />
-      <h3>Total de Fondos</h3>
-    </div>
-    <p>{{ fondos.length }}</p>
-  </div>
+            <div class="stats-summary">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <img src="/wallet.png" alt="Total de Fondos" class="icon" />
+                        <h3>Total de Fondos</h3>
+                    </div>
+                    <p>{{ fondos.length }}</p>
+                </div>
 
-  <div class="stat-card">
-    <div class="stat-header">
-      <img src="/plat.png" alt="Plataformas distintas" class="icon" />
-      <h3>Plataformas distintas</h3>
-    </div>
-    <p>{{ plataformasUnicas.length }}</p>
-  </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <img src="/plat.png" alt="Plataformas distintas" class="icon" />
+                        <h3>Plataformas distintas</h3>
+                    </div>
+                    <p>{{ plataformasUnicas.length }}</p>
+                </div>
 
-  <div class="stat-card">
-    <div class="stat-header">
-      <img src="/grafico.png" alt="Fondo más visitado" class="icon" />
-      <h3>Fondo más visitado</h3>
-    </div>
-    <p>{{ fondoMasVisitado.nombre || 'N/A' }}</p>
-    <small>Visitas: {{ fondoMasVisitado.contador || 0 }}</small>
-  </div>
-</div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <img src="/grafico.png" alt="Fondo más visitado" class="icon" />
+                        <h3>Fondo más visitado</h3>
+                    </div>
+                    <p>{{ fondoMasVisitado.nombre || 'N/A' }}</p>
+                    <small>Visitas: {{ fondoMasVisitado.contador || 0 }}</small>
+                </div>
+            </div>
 
 
 
@@ -344,44 +344,38 @@ export default {
     color: #721c24;
 }
 
-
-
-
 .stats-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
 }
 
 .stat-card {
-  background: #f9f9f9;
-  border-radius: 8px;
-  padding: 16px;
-  flex: 1 1 250px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 16px;
+    flex: 1 1 250px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .stat-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
 }
 
 .stat-card .icon {
-  width: 24px;
-  height: 24px;
+    width: 24px;
+    height: 24px;
 }
 
 
 
 .stat-card p {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 4px 0 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 4px 0 0;
 }
-
-
-
 </style>
