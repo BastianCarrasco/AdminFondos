@@ -3,13 +3,31 @@
     <div class="navbar-brand">ADMIN FONDOS</div>
     <ul class="navbar-menu">
       <li class="navbar-item">
-        <router-link to="/view1" active-class="active">Editar Fondos</router-link>
+        <router-link 
+          to="/view1" 
+          active-class="active"
+          exact-active-class="exact-active"
+        >
+          Editar Fondos
+        </router-link>
       </li>
       <li class="navbar-item">
-        <router-link to="/view2" active-class="active">Estadisticas Fondos</router-link>
+        <router-link 
+          to="/view2" 
+          active-class="active"
+          exact-active-class="exact-active"
+        >
+          Estadisticas Fondos
+        </router-link>
       </li>
       <li class="navbar-item">
-        <router-link to="/view3" active-class="active">Propuestas</router-link>
+        <router-link 
+          to="/view3" 
+          active-class="active"
+          exact-active-class="exact-active"
+        >
+          Propuestas
+        </router-link>
       </li>
     </ul>
   </nav>
@@ -51,7 +69,8 @@ export default {
   color: white;
   text-decoration: none;
   font-size: 1.1rem;
-  transition: color 0.3s;
+  transition: all 0.3s ease;
+  padding: 0.5rem 0;
 }
 
 .navbar-item a:hover {
@@ -59,7 +78,12 @@ export default {
 }
 
 .active {
-  color: #42b983 !important;
+  color: #42b983;
+  font-weight: bold;
+}
+
+.exact-active {
+  color: #42b983;
   font-weight: bold;
   border-bottom: 2px solid #42b983;
 }
