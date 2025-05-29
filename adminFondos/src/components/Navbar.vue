@@ -8,6 +8,9 @@
       <li class="navbar-item">
         <router-link to="/view2" active-class="active">Estadisticas Fondos</router-link>
       </li>
+      <li class="navbar-item">
+        <router-link to="/view3" active-class="active">Propuestas</router-link>
+      </li>
     </ul>
   </nav>
 </template>
