@@ -2,12 +2,12 @@
   <div class="view3-container">
     <div class="view3">
       <div v-if="loading" class="fullscreen-loader">
-        <img src="../../public/reloj.png" alt="Cargando..." class="spinner">
+        <img src="/reloj.png" alt="Cargando..." class="spinner">
       </div>
 
       <div v-else-if="postulaciones.length === 0" class="empty-state">
         <div class="empty-content">
-          <img src="../../public/reloj.png" alt="Reloj" class="spinner">
+          <img src="/reloj.png" alt="Reloj" class="spinner">
           <p>No hay postulaciones registradas.</p>
 
         </div>
